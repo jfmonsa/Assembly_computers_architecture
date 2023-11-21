@@ -9,36 +9,36 @@
 
 #def fib():
 #  n=1
-#  t1=0
-#  t2=1
+#  f1=0
+#  f2=1
 #  aux=0
 #  while n<16:
-#    aux=t2
-#    t2=t1+t2
-#    t1=aux
-#    log2c(t2)
-#    print(log2c(t2))
+#    aux=f2
+#    f2=f1+f2
+#    f1=aux
+#    log2c(f2)
+#    print(log2c(f2))
 #    n=n+1 #se itera
 
 
 #==== Implementación ====
 .data
-mensaje_1: .asciiz "\nEl termino (n = "
-mensaje_1_1: .asciiz " ) de la succesion de fibonacci evaluado en la funcion log2_c(n) es igual a: "
-salto: .asciiz "\n"
+mensaje_1: .asciiz "\nPara n = "
+mensaje_2: .asciiz " => fib(n) = "
+mensaje_1_1: .asciiz " => entonces  log2_c(fib(n)) es igual a: "
 .text
 
 #funcion fib
 fib:
     #$s0 -> n (terminos fibonacci) asumiento arranca en n=1
-    addi $s0,$0,1
+    addi $s0,$0,0
 
     #Primeros dos terminos de la función fibonacci $s1=0, $s2=0
     addi $s1,$0,0 #f1=0 <- $s1
     addi $s2,$0,1  #f2=1 <- $s2
 
     #limite del ciclo $t0=16
-    addi $t0,$0,16
+    addi $t0,$0,15
 
     #variable temporal para hacer el cambio de valores en el ciclo $t2=aux
     addi $t2,$0,0
@@ -47,16 +47,17 @@ fib:
 
 while:
     #cabecera del ciclo
-    slt $t1,$s0,$t0 #if i<16 -> $t1=1 else $t0=0
+    slt $t1,$s0,$t0 #if i<17 -> $t1=1 else $t0=0
     beq $t1,$0 done #if $t1=0 -> done (rompe el ciclo)
+
+    #invocar a log2_C
+    jal log2_c #pasarle como parametro f1 <- $s1
 
     #actualizar los valores de los ultmos dos terminos de fibonacci tal como el pseudocodigo
     addi $t2,$s2,0 #aux=f2 : se usa la variable auxiliar
     add $s2,$s2,$s1 #f2=f1+f2
     addi $s1,$t2,0 #t1=aux
 
-    #invocar a log2_C
-    jal log2_c #pasarle como parametro f1 <- $s1
 
     add $s0,$s0,1 #n=n+1
     j while #repetir el ciclo
@@ -90,6 +91,14 @@ log2c_done:
     
     #$s2 imprimir termino n de fibonacci
     li $v0,1
+    move $a0,$s0
+    syscall
+
+    li $v0,4
+    la $a0,mensaje_2
+    syscall
+
+    li $v0,1
     move $a0,$s1
     syscall
 
@@ -101,11 +110,6 @@ log2c_done:
     #$s3 imprimir el termino n evaluando en log2_c(n)
     li $v0,1
     move $a0,$s3
-    syscall
-
-    #mensaje_1_1
-    li $v0,4
-    la $a0,salto
     syscall
 
     jr $ra #terminar de ejecutar la funcion
