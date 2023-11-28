@@ -92,7 +92,6 @@ loop:
     li $v0,4
     la $a0,str_salto
     syscall
-        
 
     # $s3<-LSB(Q) := Obteniendo el LSB de Q
     andi $s3, $s1,1
@@ -102,7 +101,6 @@ loop:
 	beq  $s3, 0, if_lsbq_0
     #else go to if_lsbq_1 
     j    if_lsbq_1
-
 
 #condicionales
 if_lsbq_0:
